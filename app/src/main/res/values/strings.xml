@@ -22,9 +22,9 @@
     <string name="score">Score: %d</string>
     <string name="word_count">%d/10</string>
     <string name="enter_your_word">Enter your word</string>
+    <string name="wrong_guess">Wrong Guess!</string>
     <string name="congratulations">Congratulations!</string>
     <string name="you_scored">"You scored: %d"</string>
     <string name="exit">Exit</string>
     <string name="play_again">Play Again</string>
-    <string name="wrong_guess">Wrong Guess!</string>
 </resources>
