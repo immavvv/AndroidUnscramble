@@ -88,4 +88,10 @@ class GameViewModel : ViewModel() {
         // Reset user guess
         updateUserGuess("")
     }
+
+    fun skipWord() {
+        updateGameState(_uiState.value.score)
+        // Reset user guess
+        updateUserGuess("")
+    }
 }
