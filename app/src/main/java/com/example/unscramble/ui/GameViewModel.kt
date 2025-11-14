@@ -12,6 +12,20 @@ import kotlinx.coroutines.flow.update
 import com.example.unscramble.data.SCORE_INCREASE
 import com.example.unscramble.data.MAX_NO_OF_WORDS
 
+/*
+ *
+ * In previous codelabs, you learned about configuration changes in Android.
+ * When a configuration change occurs, Android restarts the activity from scratch,
+ * running all the lifecycle startup callbacks.
+ *
+ * The ViewModel stores the app-related data that isn't destroyed when the Android
+ * framework destroys and recreates activity.
+ * ViewModel objects are automatically retained and they are not destroyed
+ * like the activity instance during configuration change.
+ * The data they hold is immediately available after the recomposition.
+ *
+ */
+
 class GameViewModel : ViewModel() {
     // Game UI state
 
