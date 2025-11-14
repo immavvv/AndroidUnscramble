@@ -5,6 +5,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.example.unscramble.data.allWords
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class GameViewModel : ViewModel() {
     // Game UI state
@@ -17,6 +20,11 @@ class GameViewModel : ViewModel() {
 
     // Set of words used in the game
     private var usedWords: MutableSet<String> = mutableSetOf()
+
+    // "private set" se usa para que una propiedad sea pública para leerla,
+    // pero su setter sea privado, es decir, solo la clase puede modificarla.
+    var userGuess by mutableStateOf("")
+        private set
 
     init {
         resetGame()
@@ -46,5 +54,9 @@ class GameViewModel : ViewModel() {
             tempWord.shuffle()
         }
         return String(tempWord)
+    }
+
+    fun updateUserGuess(guessedWord: String){
+        userGuess = guessedWord
     }
 }
