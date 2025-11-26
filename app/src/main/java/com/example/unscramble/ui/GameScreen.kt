@@ -41,6 +41,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,11 +54,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.unscramble.R
 import com.example.unscramble.ui.theme.UnscrambleTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 
 @Composable
 fun GameScreen(
@@ -133,19 +133,6 @@ fun GameScreen(
 }
 
 @Composable
-fun GameStatus(score: Int, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier
-    ) {
-        Text(
-            text = stringResource(R.string.score, score),
-            style = typography.headlineMedium,
-            modifier = Modifier.padding(8.dp)
-        )
-    }
-}
-
-@Composable
 fun GameLayout(
     currentScrambledWord: String,
     isGuessWrong: Boolean,
@@ -212,6 +199,19 @@ fun GameLayout(
                 )
             )
         }
+    }
+}
+
+@Composable
+fun GameStatus(score: Int, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(R.string.score, score),
+            style = typography.headlineMedium,
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }
 

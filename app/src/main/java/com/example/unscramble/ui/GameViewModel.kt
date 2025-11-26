@@ -1,19 +1,18 @@
 package com.example.unscramble.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.unscramble.data.MAX_NO_OF_WORDS
+import com.example.unscramble.data.SCORE_INCREASE
+import com.example.unscramble.data.allWords
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import com.example.unscramble.data.allWords
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.update
-import com.example.unscramble.data.SCORE_INCREASE
-import com.example.unscramble.data.MAX_NO_OF_WORDS
 
 /*
- *
  * In previous codelabs, you learned about configuration changes in Android.
  * When a configuration change occurs, Android restarts the activity from scratch,
  * running all the lifecycle startup callbacks.
@@ -23,17 +22,12 @@ import com.example.unscramble.data.MAX_NO_OF_WORDS
  * ViewModel objects are automatically retained and they are not destroyed
  * like the activity instance during configuration change.
  * The data they hold is immediately available after the recomposition.
- *
  */
 
 class GameViewModel : ViewModel() {
-    // Game UI state
-
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
-
-    private lateinit var currentWord: String
 
     // Set of words used in the game
     private var usedWords: MutableSet<String> = mutableSetOf()
@@ -42,6 +36,15 @@ class GameViewModel : ViewModel() {
     // pero su setter sea privado, es decir, solo la clase puede modificarla.
     var userGuess by mutableStateOf("")
         private set
+
+    /*
+     * Normally, you must initialize properties in the constructor.
+     * However, this isn't always convenient. For example,
+     * you might initialize properties through dependency injection
+     * or inside the setup method of a unit test.
+     * To handle these situations, mark the property with the lateinit modifier.
+     */
+    private lateinit var currentWord: String
 
     init {
         resetGame()
@@ -52,25 +55,26 @@ class GameViewModel : ViewModel() {
         _uiState.value = GameUiState(currentScrambledWord = pickRandomWordAndShuffle())
     }
 
-    private fun pickRandomWordAndShuffle(): String {
-        // Continue picking up a new random word until you get one that hasn't been used before
-        currentWord = allWords.random()
-        if (usedWords.contains(currentWord)) {
-            return pickRandomWordAndShuffle()
+    fun checkUserGuess() {
+        if (userGuess.equals(currentWord, ignoreCase = true)) {
+            // User's guess is correct, increase the score
+            // and call updateGameState() to prepare the game for next round
+            val updatedScore = _uiState.value.score.plus(SCORE_INCREASE)
+            updateGameState(updatedScore)
         } else {
-            usedWords.add(currentWord)
-            return shuffleCurrentWord(currentWord)
+            // User's guess is wrong, show an error
+            _uiState.update { currentState ->
+                currentState.copy(isGuessedWordWrong = true)
+            }
         }
+        // Reset user guess
+        updateUserGuess("")
     }
 
-    private fun shuffleCurrentWord(word: String): String {
-        val tempWord = word.toCharArray()
-        // Scramble the word
-        tempWord.shuffle()
-        while (String(tempWord).equals(word)) {
-            tempWord.shuffle()
-        }
-        return String(tempWord)
+    fun skipWord() {
+        updateGameState(_uiState.value.score)
+        // Reset user guess
+        updateUserGuess("")
     }
 
     fun updateUserGuess(guessedWord: String) {
@@ -100,25 +104,24 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    fun checkUserGuess() {
-        if (userGuess.equals(currentWord, ignoreCase = true)) {
-            // User's guess is correct, increase the score
-            // and call updateGameState() to prepare the game for next round
-            val updatedScore = _uiState.value.score.plus(SCORE_INCREASE)
-            updateGameState(updatedScore)
+    private fun pickRandomWordAndShuffle(): String {
+        // Continue picking up a new random word until you get one that hasn't been used before
+        currentWord = allWords.random()
+        if (usedWords.contains(currentWord)) {
+            return pickRandomWordAndShuffle()
         } else {
-            // User's guess is wrong, show an error
-            _uiState.update { currentState ->
-                currentState.copy(isGuessedWordWrong = true)
-            }
+            usedWords.add(currentWord)
+            return shuffleCurrentWord(currentWord)
         }
-        // Reset user guess
-        updateUserGuess("")
     }
 
-    fun skipWord() {
-        updateGameState(_uiState.value.score)
-        // Reset user guess
-        updateUserGuess("")
+    private fun shuffleCurrentWord(word: String): String {
+        val tempWord = word.toCharArray()
+        // Scramble the word
+        tempWord.shuffle()
+        while (String(tempWord).equals(word)) {
+            tempWord.shuffle()
+        }
+        return String(tempWord)
     }
 }
